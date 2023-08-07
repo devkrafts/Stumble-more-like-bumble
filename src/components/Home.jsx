@@ -3,13 +3,13 @@ import Room from "./Room";
 import { useNavigate } from "react-router";
 
 const Home = () => {
-
-    const handleSessionNavigation=()=>{
+    // handle navigation to Room page
+    const navigation = useNavigate();
+    const handleSessionNavigation = () => {
         navigation('/session')
     }
 
-    const navigation = useNavigate();
-
+    // generate unique session id
     const [uniqueId, setUniqueId] = useState("");
     const generateUniqueId = () => {
         let key = "";
@@ -21,9 +21,9 @@ const Home = () => {
 
         }
         setUniqueId(key);
-    }
 
-    //console.log(generateUniqueId(10));
+
+    }
 
     return <div>
         <h2>Find a match</h2>
@@ -31,11 +31,16 @@ const Home = () => {
         <button>Copy</button>
         <h4>{uniqueId}</h4>
         <button onClick={handleSessionNavigation}>Start</button>
+        {/*conditional rendering of elems when the user is the creator of session */}
 
-        <h4>Already have a link? Join the session directly..</h4>
-        <input></input>
-        <button onClick={handleSessionNavigation}>Join</button>
-    </div>
+        {!uniqueId &&
+            < div className="joinee">
+                <h4>Already have a link? Join the session directly..</h4>
+                <input></input>
+                <button onClick={handleSessionNavigation}>Join</button>
+            </div>
+        }
+    </div >
 }
 
 export default Home;
