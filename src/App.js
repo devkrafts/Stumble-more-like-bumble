@@ -14,7 +14,7 @@ function App() {
             path="/"/>
 
             <Route element={<Room/>} 
-            path="/session"/>
+            path="/session/:id"/>
 
         </Routes>
 
