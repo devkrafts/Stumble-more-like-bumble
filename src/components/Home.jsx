@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import Room from "./Room";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const Home = () => {
     // handle navigation to Room page
     const navigation = useNavigate();
     const handleSessionNavigation = () => {
-        navigation('/session')
+        navigation(`/session/${uniqueId}`)
     }
+
 
     // generate unique session id
     const [uniqueId, setUniqueId] = useState("");
