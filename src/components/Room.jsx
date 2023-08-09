@@ -1,33 +1,51 @@
-import React, { useEffect } from "react";
-import { clientA, clientB } from '../Client';
-
+import React, { useEffect, useState } from "react";
+import { clientA } from '../Client';
+import { v4 as uuidv4 } from 'uuid';
 import { useParams } from 'react-router';
 
 const Room = () => {
+
+
 
     const params = useParams()
     console.log(params)
 
 
+    const [user1Data, setUser1Data] = useState('')
+    const [user2Data, setUser2Data] = useState('')
+
+
     useEffect(() => {
 
         const channelA = clientA.channel(params.id)
+        console.log("::::::::", channelA)
+
+        const currentUserId = uuidv4();
 
 
         channelA
-            .on(
-                'presence',
-                { event: 'sync' },
-                () => {
-                    const newState = channelA.presenceState()
-                    console.log('sync', newState)
-                }
-            )
+            // .on(
+            //     'presence',
+            //     { event: 'sync' },
+            //     () => {
+            //         const newState = channelA.presenceState()
+            //         console.log('sync', newState)
+            //     }
+            // )
             .on(
                 'presence',
                 { event: 'join' },
                 ({ key, newPresences }) => {
-                    console.log('join', key, newPresences)
+
+
+                    ///  setUser1Data(newPresences[0].userId)
+                    console.log('join', key, newPresences[0].userId)
+
+                    if (currentUserId === newPresences[0].userId) {
+                        setUser1Data(currentUserId)
+                    } else {
+                        setUser2Data(newPresences[0].userId)
+                    }
                 }
             )
             .on(
@@ -42,6 +60,7 @@ const Room = () => {
                     const presenceTrackStatus = await channelA.track({
                         user: 'user-1',
                         online_at: new Date().toISOString(),
+                        userId: currentUserId
                     })
                     console.log(presenceTrackStatus)
                 }
@@ -50,24 +69,27 @@ const Room = () => {
 
     }, [])
 
-
-
-
-
     return <div>
-        <h4>Waiting for User1 to join...</h4>
-        <h3>Anushka is online</h3>
-        <h3>Enter your display name</h3>
-        <input></input>
-        <button>Start swiping</button>
-        <h3>Allow location </h3>
-        <h3>Select an activity</h3>
+        {
+            !user2Data &&
+
+            <h4>Waiting for the other user to join...</h4>
+        }
+        {user2Data &&
+            <>
+                <h4>The other user has joined...</h4>
+                <button>Start swiping</button>
+                <h3>Allow location </h3>
+                <h3>Select an activity</h3>
+            </>
+        }
         <select>
             <option value="cafes">Cafes</option>
             <option value="restaurant">Restaurant</option>
             <option value="clubs">Clubs/Pubs</option>
             <option value="attractions">Attractions</option>
         </select>
+
     </div>
 }
 
