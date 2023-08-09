@@ -22,7 +22,19 @@ const Home = () => {
         }
         setUniqueId(key);
 
+    }
 
+    // when the other user joins via same unique id
+    const [inputUniqueId, setInputUniqueId] = useState("");
+    const getUniqueIdFromInput = (e) => {
+        setInputUniqueId(e.target.value)
+
+    }
+
+    // navigation for 2nd user
+    const navigationUser2 = useNavigate();
+    const handleSessionNavigationUser2 = () => {
+        navigationUser2(`/session/${inputUniqueId}`)
     }
 
     return <div>
@@ -36,8 +48,8 @@ const Home = () => {
         {!uniqueId &&
             < div className="joinee">
                 <h4>Already have a link? Join the session directly..</h4>
-                <input></input>
-                <button onClick={handleSessionNavigation}>Join</button>
+                <input onChange={getUniqueIdFromInput} value={inputUniqueId}></input>
+                <button onClick={handleSessionNavigationUser2}>Join</button>
             </div>
         }
     </div >
