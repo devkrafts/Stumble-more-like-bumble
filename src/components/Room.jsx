@@ -5,6 +5,8 @@ import { useParams } from 'react-router';
 
 const Room = () => {
 
+    const [channel, setChannel] = useState(null);
+    const [swipeSession, setSwipSession] = useState(false);
 
 
     const params = useParams()
@@ -49,6 +51,15 @@ const Room = () => {
                 }
             )
             .on(
+                'broadcast',
+                { event: 'start-typing' },
+                (payload) => {
+                    console.log(payload)
+                    setChannel(channelA)
+
+                }
+            )
+            .on(
                 'presence',
                 { event: 'leave' },
                 ({ key, leftPresences }) => {
@@ -60,37 +71,61 @@ const Room = () => {
                     const presenceTrackStatus = await channelA.track({
                         user: 'user-1',
                         online_at: new Date().toISOString(),
-                        userId: currentUserId
+                        userId: currentUserId,
+
                     })
                     console.log(presenceTrackStatus)
+
                 }
             })
-
-
+        setChannel(channelA)
     }, [])
 
-    return <div>
-        {
-            !user2Data &&
 
-            <h4>Waiting for the other user to join...</h4>
-        }
-        {user2Data &&
-            <>
-                <h4>The other user has joined...</h4>
-                <button>Start swiping</button>
-                <h3>Allow location </h3>
-                <h3>Select an activity</h3>
-            </>
-        }
-        <select>
-            <option value="cafes">Cafes</option>
-            <option value="restaurant">Restaurant</option>
-            <option value="clubs">Clubs/Pubs</option>
-            <option value="attractions">Attractions</option>
-        </select>
+    // sends  broadcast session once 1 user clicks on "start swipping" button
+    const handleStart = () => {
+        channel.send({
+            type: 'broadcast',
+            event: 'start-typing',
+            payload: {
+                message: 'sending message to user2'
+            },
+        })
+        setSwipSession(true)
+        // console.log(broadcastMessage)
 
-    </div>
+    }
+
+    return swipeSession ?
+        <div>
+            <h4>Swipeeee</h4>
+        </div>
+
+        :
+
+        <div>
+            {
+                !user2Data &&
+
+                <h4>Waiting for the other user to join...</h4>
+            }
+            {user2Data &&
+                <>
+                    <h4>The other user has joined...</h4>
+                    <button onClick={handleStart}>Start swiping</button>
+                    <h3>Allow location </h3>
+                    <h3>Select an activity</h3>
+                </>
+            }
+            <select>
+                <option value="cafes">Cafes</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="clubs">Clubs/Pubs</option>
+                <option value="attractions">Attractions</option>
+            </select>
+
+        </div>
 }
+
 
 export default Room;
