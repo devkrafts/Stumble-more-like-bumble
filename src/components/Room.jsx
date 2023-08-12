@@ -3,42 +3,58 @@ import { clientA } from '../Client';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams } from 'react-router';
 import { restaurant } from '../constants/restaurant';
+import { useNavigate } from "react-router";
 
 const Room = () => {
 
 
-    const [channel, setChannel] = useState(null);
-    const [swipeSession, setSwipSession] = useState(false);
-    const [rest, setRest] = useState(0);
-    const [user1SwipedData, setUser1SwipedData] = useState('');
-    const [user2SwipedData, seUser2SwipedData] = useState('');
+    const navigation = useNavigate();
+    const handleDetailsNavigation = (id) => {
+        navigation(`/details/${id}`)
+    }
 
+    const [channel, setChannel] = useState(null);
+    const [swipeSession, setSwipeSession] = useState(false);
+    const [rest, setRest] = useState(0);
+    const [user1SwipedData, setUser1SwipedData] = useState([]);
+    const [user2SwipedData, setUser2SwipedData] = useState([]);
+
+
+    const isAMatch = (restId) => {
+
+        const restaurantToBechecked = user2SwipedData.find((obj) => obj.id===restId)
+        console.log(":::::::::::::::::;", restaurantToBechecked, user2SwipedData, restId)
+        if(restaurantToBechecked && restaurantToBechecked.swipedRight===true){
+            console.log("------matched-----")
+            handleDetailsNavigation(restId)
+        }     
+    }
 
     // send a broadcast once user swipes - (eventname: swiped, payload: {id, swipedRight: true | false, userId }
 
     const handleSelected = () => {
+        const payload = { id: restaurant[rest].id, swipedRight: true };
         channel.send({
             type: 'broadcast',
             event: 'swiped',
-            payload: {
-                id: restaurant[rest].id,
-                swipedRight: true,
-            }
+            payload: payload
         })
         setRest(rest + 1)
+        setUser1SwipedData([...user1SwipedData, payload])
+
+        isAMatch(payload.id)
     }
 
 
     const handleRejected = () => {
+        const payload = { id: restaurant[rest].id, swipedRight: false };
         channel.send({
             type: 'broadcast',
             event: 'swiped',
-            payload: {
-                id: restaurant[rest].id,
-                swipedRight: false,
-            }
+            payload: payload
         })
         setRest(rest + 1)
+        setUser1SwipedData([...user1SwipedData, payload])
 
     }
 
@@ -76,6 +92,7 @@ const Room = () => {
                 (payload) => {
                     console.log(payload)
                     setChannel(channelA)
+                    setSwipeSession(true)
 
                 }
             )
@@ -89,10 +106,11 @@ const Room = () => {
             .on(
                 'broadcast',
                 { event: 'swiped' },
-                (payload) => {
+                ({ payload }) => {
                     console.log(payload)
+
                     // store payload in user1SwipedData as object , and then make list for each broadcast
-                    setUser1SwipedData(user1SwipedData)
+                    setUser2SwipedData([...user2SwipedData, payload])
 
                 }
             )
@@ -121,10 +139,15 @@ const Room = () => {
                 message: 'sending message to user2'
             },
         })
-        setSwipSession(true)
+        setSwipeSession(true)
     }
 
-    const data = restaurant[rest] // restaurant[i]
+    const data = restaurant[rest]
+
+    console.log("user 1 swiped data--", user1SwipedData)// returns array containing  payload objects
+    console.log("user 2 swiped data--", user2SwipedData)
+
+
     return swipeSession ?
         <div>
             <div>
