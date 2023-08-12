@@ -20,27 +20,14 @@ const Room = () => {
     useEffect(() => {
 
         const channelA = clientA.channel(params.id)
-        console.log("::::::::", channelA)
 
         const currentUserId = uuidv4();
 
-
         channelA
-            // .on(
-            //     'presence',
-            //     { event: 'sync' },
-            //     () => {
-            //         const newState = channelA.presenceState()
-            //         console.log('sync', newState)
-            //     }
-            // )
             .on(
                 'presence',
                 { event: 'join' },
                 ({ key, newPresences }) => {
-
-
-                    ///  setUser1Data(newPresences[0].userId)
                     console.log('join', key, newPresences[0].userId)
 
                     if (currentUserId === newPresences[0].userId) {
@@ -92,8 +79,6 @@ const Room = () => {
             },
         })
         setSwipSession(true)
-        // console.log(broadcastMessage)
-
     }
 
     return swipeSession ?
