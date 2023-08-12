@@ -2,12 +2,45 @@ import React, { useEffect, useState } from "react";
 import { clientA } from '../Client';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams } from 'react-router';
+import { restaurant } from '../constants/restaurant';
 
 const Room = () => {
 
+
     const [channel, setChannel] = useState(null);
     const [swipeSession, setSwipSession] = useState(false);
+    const [rest, setRest] = useState(0);
+    const [user1SwipedData, setUser1SwipedData] = useState('');
+    const [user2SwipedData, seUser2SwipedData] = useState('');
 
+
+    // send a broadcast once user swipes - (eventname: swiped, payload: {id, swipedRight: true | false, userId }
+
+    const handleSelected = () => {
+        channel.send({
+            type: 'broadcast',
+            event: 'swiped',
+            payload: {
+                id: restaurant[rest].id,
+                swipedRight: true,
+            }
+        })
+        setRest(rest + 1)
+    }
+
+
+    const handleRejected = () => {
+        channel.send({
+            type: 'broadcast',
+            event: 'swiped',
+            payload: {
+                id: restaurant[rest].id,
+                swipedRight: false,
+            }
+        })
+        setRest(rest + 1)
+
+    }
 
     const params = useParams()
     console.log(params)
@@ -39,7 +72,7 @@ const Room = () => {
             )
             .on(
                 'broadcast',
-                { event: 'start-typing' },
+                { event: 'start-swiping' },
                 (payload) => {
                     console.log(payload)
                     setChannel(channelA)
@@ -51,6 +84,16 @@ const Room = () => {
                 { event: 'leave' },
                 ({ key, leftPresences }) => {
                     console.log('leave', key, leftPresences)
+                }
+            )
+            .on(
+                'broadcast',
+                { event: 'swiped' },
+                (payload) => {
+                    console.log(payload)
+                    // store payload in user1SwipedData as object , and then make list for each broadcast
+                    setUser1SwipedData(user1SwipedData)
+
                 }
             )
             .subscribe(async (status) => {
@@ -73,7 +116,7 @@ const Room = () => {
     const handleStart = () => {
         channel.send({
             type: 'broadcast',
-            event: 'start-typing',
+            event: 'start-swiping',
             payload: {
                 message: 'sending message to user2'
             },
@@ -81,9 +124,18 @@ const Room = () => {
         setSwipSession(true)
     }
 
+    const data = restaurant[rest] // restaurant[i]
     return swipeSession ?
         <div>
-            <h4>Swipeeee</h4>
+            <div>
+                <img src={data.image} width={400} height={600} />
+                <h2>{data.name}</h2>
+                <h5>{data.ratings}</h5>
+                <h2>{data.description}</h2>
+                <button onClick={handleRejected}>✕</button>
+                <button onClick={handleSelected}>✓</button>
+
+            </div>
         </div>
 
         :
