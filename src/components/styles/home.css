@@ -1,0 +1,153 @@
+.home {
+    background-color: var(--primary-background);
+    height: 100vh;
+}
+
+.home__header {
+    font-size: 40px;
+    text-align: center;
+    padding: 20px;
+    color: var(--primary);
+}
+
+.home__create {
+    text-align: center;
+}
+
+.home__create__action {
+    font-size: 20px;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: white;
+}
+
+.home__uid {
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px
+}
+
+.home__uid__value {
+    font-size: 24px;
+    padding: 10px 18px;
+    border: 1px solid var(--tertiary);
+    color: var(--tertiary);
+    border-radius: 8px;
+}
+
+.home__uid__copy {
+    font-size: 16px;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 20px;
+    background-color: var(--primary);
+    color: white;
+}
+
+.home__join-room {
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    gap: 10px;
+    font-size: 24px;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 20px;
+    background: none;
+    color: var(--tertiary);
+}
+
+.home__join {
+    width: 100%;
+    background-color: white;
+    position: fixed;
+    height: 30vh;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home__join__prompt {
+    margin-top: 30px;
+    font-size: 30px;
+    color: var(--primary);
+}
+
+.home__join__input {
+    margin: 20px 0;
+    border: 1px solid var(--primary);
+    padding: 10px;
+    width: 130px;
+    border-radius: 8px;
+    display: flex;
+}
+
+.home__join__input > input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 24px;
+    text-align: center;
+    color: var(--secondary);
+    overflow: hidden;
+}
+
+.home__carousal {
+    height: 400px;
+    margin-top: 50px;
+    position: relative;
+    align-items: center;
+    overflow: hidden;
+    display: flex;
+}
+
+.home__carousal__images {
+    transform: rotate(-3deg);
+    display: flex;
+    gap: 2px;
+    position: absolute;
+    top: 0px;
+    left: -10px;
+    animation-name: animate-images;
+    animation-duration: 50s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: linear;
+}
+
+@keyframes animate-images {
+    from {
+        left: -10px;
+        top: 0px;
+    }
+
+    to {
+        left: -1200px;
+        top: 50px;
+    }
+}
+
+.home__carousal__images__item > img {
+    border-radius: 20px;
+}
+
+.home__join-room--primary {
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    gap: 10px;
+    font-size: 24px;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 20px;
+    background: none;
+    color: var(--secondary);
+    background-color: var(--tertiary);
+}
