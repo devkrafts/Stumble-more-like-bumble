@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate } from "react-router";
+import { ArrowRightCircle, Copy } from 'react-feather';
+import homeImage1 from '../assets/images/home-image1.jpg';
+import homeImage2 from '../assets/images/home-image2.jpg';
+import homeImage3 from '../assets/images/home-image3.jpg';
+import homeImage4 from '../assets/images/home-image4.jpg';
+import './styles/home.css';
 
 const Home = () => {
     // handle navigation to Room page
@@ -37,19 +43,68 @@ const Home = () => {
         navigationUser2(`/session/${inputUniqueId}`)
     }
 
-    return <div>
-        <h2>Find a match</h2>
-        <button onClick={generateUniqueId}>Create a link</button>
-        <button>Copy</button>
-        <h4>{uniqueId}</h4>
-        <button onClick={handleSessionNavigation}>Start</button>
-        {/*conditional rendering of elems when the user is the creator of session */}
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(uniqueId);
+            alert('Copied to clipboard');
+        } catch(err) {
+            console.log(err);
+        }
+    }
 
-        {!uniqueId &&
-            < div className="joinee">
-                <h4>Already have a link? Join the session directly..</h4>
-                <input onChange={getUniqueIdFromInput} value={inputUniqueId}></input>
-                <button onClick={handleSessionNavigationUser2}>Join</button>
+    return <div className="home">
+        <div className="home__header">Stumble</div>
+        <div className="home__create">
+            <button
+                className="home__create__action"
+                onClick={generateUniqueId}
+            >
+                Create a room
+            </button>
+        </div>
+        {
+            uniqueId &&
+            <>
+                <div className="home__uid">
+                    <div className="home__uid__value">{uniqueId}</div>
+                    <button className="home__uid__copy" onClick={handleCopy}><Copy /></button>
+                </div>
+            </>
+        }
+
+        <div className="home__carousal">
+            <div className="home__carousal__images">
+                <div className="home__carousal__images__item">
+                    <img src={homeImage1} width={400} height={300} alt='img1'/>
+                </div>
+                <div className="home__carousal__images__item">
+                    <img src={homeImage2} width={400} height={300} alt='img2'/>
+                </div>
+                <div className="home__carousal__images__item">
+                    <img src={homeImage3} width={400} height={300} alt='img3'/>
+                </div>
+                <div className="home__carousal__images__item">
+                    <img src={homeImage4} width={400} height={300} alt='img4'/>
+                </div>
+            </div>
+        </div>
+
+        {/*conditional rendering of elems when the user is the creator of session */}
+        {
+            !uniqueId &&
+            <div className="home__join">
+                <div className="home__join__prompt">Already invited?</div>
+                <div className="home__join__input">
+                    <input onChange={getUniqueIdFromInput} value={inputUniqueId} maxLength={6} placeholder="invite code" />
+                </div>
+                <button className="home__join-room" onClick={handleSessionNavigationUser2}>Join room <ArrowRightCircle /></button>
+            </div>
+        }
+
+        {
+            uniqueId &&
+            <div>
+                <button className="home__join-room--primary" onClick={handleSessionNavigation}>Join room <ArrowRightCircle /></button>
             </div>
         }
     </div >
