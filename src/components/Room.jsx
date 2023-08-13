@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from 'react-router';
+import { PlayCircle, Check, X, Star, Send } from 'react-feather';
+import { SwipeCard } from 'solid-swipe-card';
 import { clientA } from '../Client';
 import { v4 as uuidv4 } from 'uuid';
 import { restaurant } from '../constants/restaurant';
 import './styles/room.css';
 
 const Room = () => {
+    const screenRef = useRef(null);
 
     const navigation = useNavigate();
     const handleDetailsNavigation = (id) => {
@@ -87,7 +90,7 @@ const Room = () => {
     }, [user2SwipedData.length]);
 
     useEffect(() => {
-        const channelA = clientA.channel(params.id)
+        const channelA = clientA.channel(params.id);
         const currentUserId = uuidv4();
 
         channelA
@@ -114,7 +117,11 @@ const Room = () => {
                 'presence',
                 { event: 'leave' },
                 ({ key, leftPresences }) => {
-                    console.log('leave', key, leftPresences)
+                    if (currentUserId === leftPresences[0].userId) {
+                        setUser1Data('')
+                    } else {
+                        setUser2Data('')
+                    }
                 }
             )
             .on(
@@ -130,14 +137,20 @@ const Room = () => {
                     await channelA.track({
                         user: 'user-1',
                         online_at: new Date().toISOString(),
-                        userId: currentUserId,
-
+                        userId: currentUserId
                     })
 
                 }
-            })
+            });
+
         setChannel(channelA)
-    }, [])
+    }, []);
+
+    useLayoutEffect(() => {
+        if(screenRef.current && window.innerHeight) {
+            screenRef.current.style.height = `${window.innerHeight}px`;
+        }
+      }, []);
 
 
     if(rest === restaurant.length){
@@ -148,42 +161,62 @@ const Room = () => {
 
     const data = restaurant[rest]
    
-    return swipeSession ?
-        <div className="swipe-mode">
-            <div>
-                <img src={data.image} width={400} height={600} alt='detail' />
-                <h2>{data.name}</h2>
-                <h5>{data.ratings}</h5>
-                <h2>{data.description}</h2>
-                <button onClick={handleRejected}>✕</button>
-                <button onClick={handleSelected}>✓</button>
-
-            </div>
-        </div>
-
-        :
-
-        <div className="waiting-room">
+    return (
+        <div className="room" ref={screenRef}>
+            <div className="room__header">Stumble</div>
             {
-                !user2Data &&
-                <h4>Waiting for the other user to join...</h4>
-            }
-            {user2Data &&
-                <>
-                    <h4>The other user has joined...</h4>
-                    <button onClick={handleStart}>Start swiping</button>
-                    <h3>Allow location </h3>
-                    <h3>Select an activity</h3>
-                </>
-            }
-            <select>
-                <option value="cafes">Cafes</option>
-                <option value="restaurant">Restaurant</option>
-                <option value="clubs">Clubs/Pubs</option>
-                <option value="attractions">Attractions</option>
-            </select>
+                swipeSession ?
+                <div className="room__swipe-mode">
+                    {/* <SwipeCard> */}
+                        <div className="room__swipe-mode__item">
+                            <div className="room__swipe-mode__item__image-container">
+                                <img className="room__swipe-mode__item__image" src={data.image} alt='detail' />
+                                <div className="room__swipe-mode__item__details-container">
+                                    <div className="room__swipe-mode__item__name"><strong>{data.name}</strong><Send /></div>
+                                    <div className="room__swipe-mode__item__rating">
+                                        {
+                                            data.rating &&
+                                            Array.from({length: Number(data.rating)}).map(() => <Star width={20} fill={'var(--secondary)'}/>)
+                                        }
+                                    </div>
+                                    <div className="room__swipe-mode__item__description">{data.address}</div>
+                                    <div className="room__swipe-mode__item__description-2">{data["address line 2"]}</div>
+                                </div>
+                            </div>
+                            <div className="room__swipe-mode__item__actions">
+                                <button className="room__swipe-mode__item__swipe-left" onClick={handleRejected}><X width={30} height={30}/></button>
+                                <button className="room__swipe-mode__item__swipe-right" onClick={handleSelected}><Check width={30} height={30}/></button>
+                            </div>
 
+                        </div>
+                    {/* </SwipeCard> */}
+                </div>
+                :
+                <div className="room__waiting-room">
+                    {
+                        !user2Data ?
+                        <div className="room__waiting-room__waiting">Waiting for your friend to join...</div>
+                        :
+                        <div className="room__waiting-room__waiting">Your friend has joined, let's go!</div>
+                    }
+                    <div className="room__waiting-room__select-section">
+                        <div className="room__waiting-room__select-text">Let's pick a</div>
+                        <select className="room__waiting-room__select">
+                            <option value="cafes">cafe</option>
+                            <option value="restaurant">restaurant</option>
+                            <option value="clubs">club</option>
+                            <option value="attractions">attraction</option>
+                        </select>
+                    </div>
+
+                    {
+                        user2Data &&
+                        <button className="room__waiting-room__start" onClick={handleStart}>Let's go<PlayCircle /></button>
+                    }
+                </div>
+            }
         </div>
+    )
 }
 
 
