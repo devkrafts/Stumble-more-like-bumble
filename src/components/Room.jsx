@@ -202,10 +202,10 @@ const Room = () => {
                     <div className="room__waiting-room__select-section">
                         <div className="room__waiting-room__select-text">Let's pick a</div>
                         <select className="room__waiting-room__select">
-                            <option value="cafes">cafe</option>
+                            {/* <option value="cafes">cafe</option> */}
                             <option value="restaurant">restaurant</option>
                             <option value="clubs">club</option>
-                            <option value="attractions">attraction</option>
+                            {/* <option value="attractions">attraction</option> */}
                         </select>
                     </div>
 
