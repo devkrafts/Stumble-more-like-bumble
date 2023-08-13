@@ -177,10 +177,10 @@ const Room = () => {
                 </>
             }
             <select>
-                <option value="cafes">Cafes</option>
+                {/* <option value="cafes">Cafes</option> */}
                 <option value="restaurant">Restaurant</option>
                 <option value="clubs">Clubs/Pubs</option>
-                <option value="attractions">Attractions</option>
+                {/* <option value="attractions">Attractions</option> */}
             </select>
 
         </div>
