@@ -4,3 +4,15 @@
   --tertiary: #122620;
   --primary-background: #F4EBD0;
 }
+
+@font-face {
+  font-family: 'Gotag';
+  src: local("Gotag"),
+    url("./assets/fonts/gotag-font-1691897597-0/Gotag-BF646dc9786ebbc.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: local("Poppins"),
+    url("./assets/fonts/Poppins/Poppins-Regular.ttf") format("truetype");
+}

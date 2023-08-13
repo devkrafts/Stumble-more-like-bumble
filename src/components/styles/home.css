@@ -1,38 +1,55 @@
 .home {
     background-color: var(--primary-background);
-    height: 100vh;
+    overflow: hidden;
+    height: 100%;
 }
 
 .home__header {
-    font-size: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15%;
+    font-size: 3em;
     text-align: center;
-    padding: 20px;
     color: var(--primary);
+    font-family: 'Gotag';
 }
 
 .home__create {
     text-align: center;
+    height: 10%;
 }
 
 .home__create__action {
-    font-size: 20px;
+    font-size: 1.2em;
     border: none;
-    padding: 12px 30px;
-    border-radius: 20px;
+    padding: 1.5vh 10vw;
+    border-radius: 40px;
     background-color: var(--primary);
     color: white;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .home__uid {
-    margin: 20px;
+    height: 10vh;
+    margin: 2vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px
+    gap: 20px;
+}
+
+.home__helper-text {
+    height: 5vh;
+    font-size: 1.2em;
+    text-align: center;
+    color: var(--tertiary);
 }
 
 .home__uid__value {
-    font-size: 24px;
+    text-align: center;
+    width: 100px;
+    font-size: 1.6em;
     padding: 10px 18px;
     border: 1px solid var(--tertiary);
     color: var(--tertiary);
@@ -40,9 +57,11 @@
 }
 
 .home__uid__copy {
-    font-size: 16px;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
     border: none;
-    padding: 12px 24px;
+    padding: 12px 18px;
     border-radius: 20px;
     background-color: var(--primary);
     color: white;
@@ -53,39 +72,41 @@
     align-items: center;
     margin: 0 auto;
     gap: 10px;
-    font-size: 24px;
+    font-size: 1.5em;
     border: none;
-    padding: 12px 30px;
-    border-radius: 20px;
     background: none;
     color: var(--tertiary);
+}
+
+.home__join-room:disabled {
+    color: var(--tertiary);
+    opacity: 0.5;
 }
 
 .home__join {
     width: 100%;
     background-color: white;
     position: fixed;
-    height: 30vh;
+    height: 30%;
     border-top-left-radius: 40px;
     border-top-right-radius: 40px;
     bottom: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-around;
 }
 
 .home__join__prompt {
-    margin-top: 30px;
-    font-size: 30px;
+    font-size: 2em;
     color: var(--primary);
 }
 
 .home__join__input {
-    margin: 20px 0;
-    border: 1px solid var(--primary);
-    padding: 10px;
-    width: 130px;
-    border-radius: 8px;
+    border: 0.5px solid var(--primary);
+    padding: 0.8em;
+    width: 180px;
+    border-radius: 10px;
     display: flex;
 }
 
@@ -93,43 +114,63 @@
     width: 100%;
     border: none;
     outline: none;
-    font-size: 24px;
+    font-size: 1.2em;
     text-align: center;
     color: var(--secondary);
     overflow: hidden;
 }
 
+.home__join__input > input::placeholder {
+    color: var(--secondary);
+    opacity: 0.8;
+}
+
 .home__carousal {
-    height: 400px;
-    margin-top: 50px;
+    /* 100 - (15 + 10 + 30) */
+    height: 45%;
     position: relative;
     align-items: center;
     overflow: hidden;
     display: flex;
+    overflow: hidden;
 }
 
 .home__carousal__images {
-    transform: rotate(-3deg);
+    height: 100%;
     display: flex;
-    gap: 2px;
+    gap: 4px;
     position: absolute;
     top: 0px;
-    left: -10px;
-    animation-name: animate-images;
-    animation-duration: 50s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-timing-function: linear;
+}
+
+@media (max-width: 768px) {
+    .home__carousal__images {
+        transform: rotate(-3deg);
+        animation-name: animate-images;
+        animation-duration: 60s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+        animation-timing-function: linear;
+    }
+}
+
+.home__carousal__images__item {
+    height: 100%;
+}
+
+.home__carousal__images__item > img {
+    height: 85%;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 @keyframes animate-images {
     from {
-        left: -10px;
+        left: 0px;
         top: 0px;
     }
 
     to {
-        left: -1200px;
+        left: -1150px;
         top: 50px;
     }
 }
@@ -138,14 +179,20 @@
     border-radius: 20px;
 }
 
+.home__footer {
+    width: 100%;
+    position: absolute;
+    bottom: 3vh;
+}
+
 .home__join-room--primary {
     display: flex;
     align-items: center;
     margin: 0 auto;
     gap: 10px;
-    font-size: 24px;
+    font-size: 1.5em;
     border: none;
-    padding: 12px 30px;
+    padding: 1.5vh 8vw;
     border-radius: 20px;
     background: none;
     color: var(--secondary);
