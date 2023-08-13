@@ -3,7 +3,7 @@ export const restaurant = [
     "id": 0,
     "image": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80",
     "address": "228 City Road",
-    "name": ".CN Chinese",
+    "name": "CN Chinese",
     "rating": 5,
     "phone": "+91 9043546532"
   },
@@ -75,7 +75,7 @@ export const restaurant = [
     "phone": "+91 9901583932"
   },
   {
-    "id": 8,
+    "id": 9,
     "image": "https://images.unsplash.com/photo-1642232176491-83ec29671e85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=327&q=80",
     "address": "Unit 4 Spencer House",
     "name": "1 2 3 Chinese",

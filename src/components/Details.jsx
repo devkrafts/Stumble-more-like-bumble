@@ -7,10 +7,7 @@ const Details = () => {
     const [rest, setRest] = useState('')
 
     useEffect(()=>{
-
-        console.log(params, restaurant)
         setRest(restaurant.find((obj)=>`${obj.id}`===params.detailId)||{})
-        console.log(rest)
     }, [params.detailId])
 
     return <div>

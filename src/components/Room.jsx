@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from 'react-router';
 import { PlayCircle, Check, X, Star, Send } from 'react-feather';
-import { SwipeCard } from 'solid-swipe-card';
+import TinderCard from 'react-tinder-card'
 import { clientA } from '../Client';
 import { v4 as uuidv4 } from 'uuid';
 import { restaurant } from '../constants/restaurant';
@@ -17,7 +17,7 @@ const Room = () => {
 
     const [channel, setChannel] = useState(null);
     const [swipeSession, setSwipeSession] = useState(false);
-    const [rest, setRest] = useState(0);
+    const [rest, setRest] = useState(restaurant.length-1);
     const [user1SwipedData, setUser1SwipedData] = useState([]);
     const [user2SwipedData, setUser2SwipedData] = useState([]);
     const [user1Data, setUser1Data] = useState('');
@@ -25,7 +25,6 @@ const Room = () => {
     const params = useParams();
 
     const isAMatch = (restId) => {
-
         const restaurantToBechecked = user2SwipedData.find((obj) => obj.id === restId)
         if (restaurantToBechecked && restaurantToBechecked.swipedRight === true) {
             handleDetailsNavigation(restId)
@@ -41,6 +40,16 @@ const Room = () => {
 
     // send a broadcast once user swipes - (eventname: swiped, payload: {id, swipedRight: true | false, userId }
 
+    const handleSwipe = async (dir, index) => {
+        if(index === rest) {
+            if(dir === 'right') {
+                handleSelected();
+            } else if(dir === 'left') {
+                handleRejected();
+            }
+        }
+    }
+
     const handleSelected = () => {
         const payload = { id: restaurant[rest].id, swipedRight: true };
         channel.send({
@@ -49,9 +58,8 @@ const Room = () => {
             payload: payload
         })
         
-        setRest(rest + 1)
-        
-        
+        setRest(rest - 1);
+
         setUser1SwipedData([...user1SwipedData, payload])
         isAMatch(payload.id)
     }
@@ -63,7 +71,7 @@ const Room = () => {
             event: 'swiped',
             payload: payload
         })
-        setRest(rest + 1)
+        setRest(rest - 1)
         setUser1SwipedData([...user1SwipedData, payload])
 
     }
@@ -85,9 +93,8 @@ const Room = () => {
         const lastElemOfUser2Data = user2SwipedData[user2SwipedData.length - 1];
         if (lastElemOfUser2Data && lastElemOfUser2Data.swipedRight === true) {
             isAMatchUser2(lastElemOfUser2Data.id)
-
         }
-    }, [user2SwipedData.length]);
+    }, [user2SwipedData]);
 
     useEffect(() => {
         const channelA = clientA.channel(params.id);
@@ -151,15 +158,14 @@ const Room = () => {
             screenRef.current.style.height = `${window.innerHeight}px`;
         }
       }, []);
-
-
-    if(rest === restaurant.length){
+      
+    if(rest < 0){
         return <div>
             <h3>Go touch the grass for today!</h3>
         </div>
     }
 
-    const data = restaurant[rest]
+    // const data = restaurant[rest]
    
     return (
         <div className="room" ref={screenRef}>
@@ -167,29 +173,37 @@ const Room = () => {
             {
                 swipeSession ?
                 <div className="room__swipe-mode">
-                    {/* <SwipeCard> */}
-                        <div className="room__swipe-mode__item">
-                            <div className="room__swipe-mode__item__image-container">
-                                <img className="room__swipe-mode__item__image" src={data.image} alt='detail' />
-                                <div className="room__swipe-mode__item__details-container">
-                                    <div className="room__swipe-mode__item__name"><strong>{data.name}</strong><Send /></div>
-                                    <div className="room__swipe-mode__item__rating">
-                                        {
-                                            data.rating &&
-                                            Array.from({length: Number(data.rating)}).map(() => <Star width={20} fill={'var(--secondary)'}/>)
-                                        }
+                    {
+                        restaurant.map((data, index) => (
+                            <TinderCard
+                                key={index}
+                                className="room__swipe-mode__item"
+                                preventSwipe={['up', 'down']}
+                                onSwipe={(dir) => handleSwipe(dir, index)}
+                            >
+                                <>
+                                    <div className="room__swipe-mode__item__image-container">
+                                        <img className="room__swipe-mode__item__image" src={data.image} alt='detail' />
+                                        <div className="room__swipe-mode__item__details-container">
+                                            <div className="room__swipe-mode__item__name"><strong>{data.name}</strong></div>
+                                            <div className="room__swipe-mode__item__rating">
+                                                {
+                                                    data.rating &&
+                                                    Array.from({length: Number(data.rating)}).map(() => '⭐')
+                                                }
+                                            </div>
+                                            <div className="room__swipe-mode__item__description">{data.address}</div>
+                                            {/* <div className="room__swipe-mode__item__description-2">{data["address line 2"]}</div> */}
+                                        </div>
                                     </div>
-                                    <div className="room__swipe-mode__item__description">{data.address}</div>
-                                    <div className="room__swipe-mode__item__description-2">{data["address line 2"]}</div>
-                                </div>
-                            </div>
-                            <div className="room__swipe-mode__item__actions">
-                                <button className="room__swipe-mode__item__swipe-left" onClick={handleRejected}><X width={30} height={30}/></button>
-                                <button className="room__swipe-mode__item__swipe-right" onClick={handleSelected}><Check width={30} height={30}/></button>
-                            </div>
-
-                        </div>
-                    {/* </SwipeCard> */}
+                                    {/* <div className="room__swipe-mode__item__actions">
+                                        <button className="room__swipe-mode__item__swipe-left pressable" onClick={() => handleSwipe('left')}>X</button>
+                                        <button className="room__swipe-mode__item__swipe-right pressable" onClick={() => handleSwipe('right')}>✔️</button>
+                                    </div> */}
+                                </>
+                            </TinderCard>
+                        ))
+                    }
                 </div>
                 :
                 <div className="room__waiting-room">
