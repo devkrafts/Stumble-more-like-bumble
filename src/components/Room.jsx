@@ -7,7 +7,6 @@ import { useNavigate } from "react-router";
 
 const Room = () => {
 
-
     const navigation = useNavigate();
     const handleDetailsNavigation = (id) => {
         navigation(`/details/${id}`)
@@ -19,15 +18,33 @@ const Room = () => {
     const [user1SwipedData, setUser1SwipedData] = useState([]);
     const [user2SwipedData, setUser2SwipedData] = useState([]);
 
+    useEffect(() => {
+        const lastElemOfUser2Data = user2SwipedData[user2SwipedData.length - 1];
+        console.log("last elem ", lastElemOfUser2Data)
+        if (lastElemOfUser2Data && lastElemOfUser2Data.swipedRight === true) {
+            isAMatchUser2(lastElemOfUser2Data.id)
+
+        }
+    }, [user2SwipedData.length])
+
 
     const isAMatch = (restId) => {
 
-        const restaurantToBechecked = user2SwipedData.find((obj) => obj.id===restId)
-        console.log(":::::::::::::::::;", restaurantToBechecked, user2SwipedData, restId)
-        if(restaurantToBechecked && restaurantToBechecked.swipedRight===true){
-            console.log("------matched-----")
+        const restaurantToBechecked = user2SwipedData.find((obj) => obj.id === restId)
+        //  console.log(":::::::::::::::::;", restaurantToBechecked, user2SwipedData, restId)
+        if (restaurantToBechecked && restaurantToBechecked.swipedRight === true) {
+            //  console.log("------matched-----")
             handleDetailsNavigation(restId)
-        }     
+        }
+    }
+
+    const isAMatchUser2 = (restId) => {
+        const restToBeChecked = user1SwipedData.find((obj) => obj.id === restId)
+        console.log("***********", restToBeChecked, user1SwipedData, restId)
+        if (restToBeChecked && restToBeChecked.swipedRight === true) {
+            console.log("____its a match___")
+            handleDetailsNavigation(restId)
+        }
     }
 
     // send a broadcast once user swipes - (eventname: swiped, payload: {id, swipedRight: true | false, userId }
@@ -39,12 +56,13 @@ const Room = () => {
             event: 'swiped',
             payload: payload
         })
+        
         setRest(rest + 1)
+        
+        
         setUser1SwipedData([...user1SwipedData, payload])
-
         isAMatch(payload.id)
     }
-
 
     const handleRejected = () => {
         const payload = { id: restaurant[rest].id, swipedRight: false };
@@ -59,7 +77,7 @@ const Room = () => {
     }
 
     const params = useParams()
-    console.log(params)
+    //console.log(params)
 
 
     const [user1Data, setUser1Data] = useState('')
@@ -77,7 +95,7 @@ const Room = () => {
                 'presence',
                 { event: 'join' },
                 ({ key, newPresences }) => {
-                    console.log('join', key, newPresences[0].userId)
+                    //console.log('join', key, newPresences[0].userId)
 
                     if (currentUserId === newPresences[0].userId) {
                         setUser1Data(currentUserId)
@@ -90,7 +108,7 @@ const Room = () => {
                 'broadcast',
                 { event: 'start-swiping' },
                 (payload) => {
-                    console.log(payload)
+                    //console.log(payload)
                     setChannel(channelA)
                     setSwipeSession(true)
 
@@ -110,7 +128,9 @@ const Room = () => {
                     console.log(payload)
 
                     // store payload in user1SwipedData as object , and then make list for each broadcast
-                    setUser2SwipedData([...user2SwipedData, payload])
+                    setUser2SwipedData(user2SwipedData => [...user2SwipedData, payload])
+                    console.log("@@@@@@@@ user1 swiped data", payload)
+                    // isAMatchUser2(payload.id)
 
                 }
             )
@@ -122,7 +142,7 @@ const Room = () => {
                         userId: currentUserId,
 
                     })
-                    console.log(presenceTrackStatus)
+                    // console.log(presenceTrackStatus)
 
                 }
             })
@@ -140,6 +160,12 @@ const Room = () => {
             },
         })
         setSwipeSession(true)
+
+    }
+     if(rest===restaurant.length){
+        return <div>
+            <h3>Go touch the grass for today!</h3>
+        </div>
     }
 
     const data = restaurant[rest]
@@ -148,6 +174,8 @@ const Room = () => {
     console.log("user 2 swiped data--", user2SwipedData)
 
 
+
+   
     return swipeSession ?
         <div>
             <div>
