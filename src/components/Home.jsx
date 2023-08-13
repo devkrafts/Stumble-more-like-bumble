@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowRightCircle, Copy } from 'react-feather';
 import homeImage1 from '../assets/images/home-image1.jpg';
@@ -8,6 +8,14 @@ import homeImage4 from '../assets/images/home-image4.jpg';
 import './styles/home.css';
 
 const Home = () => {
+    const screenRef = useRef(null);
+
+    useLayoutEffect(() => {
+        if(screenRef.current && window.innerHeight) {
+            screenRef.current.style.height = `${window.innerHeight}px`;
+        }
+      }, []);
+
     // handle navigation to Room page
     const navigation = useNavigate();
     const handleSessionNavigation = () => {
@@ -52,19 +60,23 @@ const Home = () => {
         }
     }
 
-    return <div className="home">
+    return <div className="home" ref={screenRef}>
         <div className="home__header">Stumble</div>
-        <div className="home__create">
-            <button
-                className="home__create__action"
-                onClick={generateUniqueId}
-            >
-                Create a room
-            </button>
-        </div>
+            {
+                !uniqueId &&
+                <div className="home__create">
+                    <button
+                        className="home__create__action"
+                        onClick={generateUniqueId}
+                    >
+                        Get Invite
+                    </button>
+                </div>
+            }
         {
             uniqueId &&
             <>
+                <div className="home__helper-text">Share this invite code with your friend.</div>
                 <div className="home__uid">
                     <div className="home__uid__value">{uniqueId}</div>
                     <button className="home__uid__copy" onClick={handleCopy}><Copy /></button>
@@ -75,16 +87,16 @@ const Home = () => {
         <div className="home__carousal">
             <div className="home__carousal__images">
                 <div className="home__carousal__images__item">
-                    <img src={homeImage1} width={400} height={300} alt='img1'/>
+                    <img src={homeImage1} alt='img1'/>
                 </div>
                 <div className="home__carousal__images__item">
-                    <img src={homeImage2} width={400} height={300} alt='img2'/>
+                    <img src={homeImage2} alt='img2'/>
                 </div>
                 <div className="home__carousal__images__item">
-                    <img src={homeImage3} width={400} height={300} alt='img3'/>
+                    <img src={homeImage3} alt='img3'/>
                 </div>
                 <div className="home__carousal__images__item">
-                    <img src={homeImage4} width={400} height={300} alt='img4'/>
+                    <img src={homeImage4} alt='img4'/>
                 </div>
             </div>
         </div>
@@ -95,15 +107,15 @@ const Home = () => {
             <div className="home__join">
                 <div className="home__join__prompt">Already invited?</div>
                 <div className="home__join__input">
-                    <input onChange={getUniqueIdFromInput} value={inputUniqueId} maxLength={6} placeholder="invite code" />
+                    <input onChange={getUniqueIdFromInput} value={inputUniqueId} maxLength={6} placeholder="Enter invite code" />
                 </div>
-                <button className="home__join-room" onClick={handleSessionNavigationUser2}>Join room <ArrowRightCircle /></button>
+                <button className="home__join-room" onClick={handleSessionNavigationUser2} disabled={inputUniqueId.length !== 6}>Join room <ArrowRightCircle /></button>
             </div>
         }
 
         {
             uniqueId &&
-            <div>
+            <div className="home__footer">
                 <button className="home__join-room--primary" onClick={handleSessionNavigation}>Join room <ArrowRightCircle /></button>
             </div>
         }

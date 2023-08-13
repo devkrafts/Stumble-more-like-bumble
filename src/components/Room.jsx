@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from 'react-router';
 import { clientA } from '../Client';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams } from 'react-router';
 import { restaurant } from '../constants/restaurant';
-import { useNavigate } from "react-router";
+import './styles/room.css';
 
 const Room = () => {
 
@@ -17,32 +17,21 @@ const Room = () => {
     const [rest, setRest] = useState(0);
     const [user1SwipedData, setUser1SwipedData] = useState([]);
     const [user2SwipedData, setUser2SwipedData] = useState([]);
-
-    useEffect(() => {
-        const lastElemOfUser2Data = user2SwipedData[user2SwipedData.length - 1];
-        console.log("last elem ", lastElemOfUser2Data)
-        if (lastElemOfUser2Data && lastElemOfUser2Data.swipedRight === true) {
-            isAMatchUser2(lastElemOfUser2Data.id)
-
-        }
-    }, [user2SwipedData.length])
-
+    const [user1Data, setUser1Data] = useState('');
+    const [user2Data, setUser2Data] = useState('');
+    const params = useParams();
 
     const isAMatch = (restId) => {
 
         const restaurantToBechecked = user2SwipedData.find((obj) => obj.id === restId)
-        //  console.log(":::::::::::::::::;", restaurantToBechecked, user2SwipedData, restId)
         if (restaurantToBechecked && restaurantToBechecked.swipedRight === true) {
-            //  console.log("------matched-----")
             handleDetailsNavigation(restId)
         }
     }
 
     const isAMatchUser2 = (restId) => {
         const restToBeChecked = user1SwipedData.find((obj) => obj.id === restId)
-        console.log("***********", restToBeChecked, user1SwipedData, restId)
         if (restToBeChecked && restToBeChecked.swipedRight === true) {
-            console.log("____its a match___")
             handleDetailsNavigation(restId)
         }
     }
@@ -76,18 +65,29 @@ const Room = () => {
 
     }
 
-    const params = useParams()
-    //console.log(params)
+    // sends  broadcast session once 1 user clicks on "start swipping" button
+    const handleStart = () => {
+        channel.send({
+            type: 'broadcast',
+            event: 'start-swiping',
+            payload: {
+                message: 'sending message to user2'
+            },
+        })
+        setSwipeSession(true)
 
-
-    const [user1Data, setUser1Data] = useState('')
-    const [user2Data, setUser2Data] = useState('')
-
+    }
 
     useEffect(() => {
+        const lastElemOfUser2Data = user2SwipedData[user2SwipedData.length - 1];
+        if (lastElemOfUser2Data && lastElemOfUser2Data.swipedRight === true) {
+            isAMatchUser2(lastElemOfUser2Data.id)
 
+        }
+    }, [user2SwipedData.length]);
+
+    useEffect(() => {
         const channelA = clientA.channel(params.id)
-
         const currentUserId = uuidv4();
 
         channelA
@@ -95,8 +95,6 @@ const Room = () => {
                 'presence',
                 { event: 'join' },
                 ({ key, newPresences }) => {
-                    //console.log('join', key, newPresences[0].userId)
-
                     if (currentUserId === newPresences[0].userId) {
                         setUser1Data(currentUserId)
                     } else {
@@ -108,10 +106,8 @@ const Room = () => {
                 'broadcast',
                 { event: 'start-swiping' },
                 (payload) => {
-                    //console.log(payload)
                     setChannel(channelA)
                     setSwipeSession(true)
-
                 }
             )
             .on(
@@ -125,24 +121,18 @@ const Room = () => {
                 'broadcast',
                 { event: 'swiped' },
                 ({ payload }) => {
-                    console.log(payload)
-
-                    // store payload in user1SwipedData as object , and then make list for each broadcast
+                    // store payload in user2SwipedData as object , and then make list for each broadcast
                     setUser2SwipedData(user2SwipedData => [...user2SwipedData, payload])
-                    console.log("@@@@@@@@ user1 swiped data", payload)
-                    // isAMatchUser2(payload.id)
-
                 }
             )
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
-                    const presenceTrackStatus = await channelA.track({
+                    await channelA.track({
                         user: 'user-1',
                         online_at: new Date().toISOString(),
                         userId: currentUserId,
 
                     })
-                    // console.log(presenceTrackStatus)
 
                 }
             })
@@ -150,36 +140,18 @@ const Room = () => {
     }, [])
 
 
-    // sends  broadcast session once 1 user clicks on "start swipping" button
-    const handleStart = () => {
-        channel.send({
-            type: 'broadcast',
-            event: 'start-swiping',
-            payload: {
-                message: 'sending message to user2'
-            },
-        })
-        setSwipeSession(true)
-
-    }
-     if(rest===restaurant.length){
+    if(rest === restaurant.length){
         return <div>
             <h3>Go touch the grass for today!</h3>
         </div>
     }
 
     const data = restaurant[rest]
-
-    console.log("user 1 swiped data--", user1SwipedData)// returns array containing  payload objects
-    console.log("user 2 swiped data--", user2SwipedData)
-
-
-
    
     return swipeSession ?
-        <div>
+        <div className="swipe-mode">
             <div>
-                <img src={data.image} width={400} height={600} />
+                <img src={data.image} width={400} height={600} alt='detail' />
                 <h2>{data.name}</h2>
                 <h5>{data.ratings}</h5>
                 <h2>{data.description}</h2>
@@ -191,10 +163,9 @@ const Room = () => {
 
         :
 
-        <div>
+        <div className="waiting-room">
             {
                 !user2Data &&
-
                 <h4>Waiting for the other user to join...</h4>
             }
             {user2Data &&
