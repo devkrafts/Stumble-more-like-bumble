@@ -1,6 +1,6 @@
 # [Stumble](stumble-more-like-bumble.vercel.app)🚀
 
-This app is Bumble, but to agree 🤝 upon a place to hang out with your friend.🧑‍🤝‍🧑
+This app is Bumble, but to agree 🤝 upon a place to hang out with your friend.🧑‍🤝‍🧑 
 
 ## Tech stack used 💻
 - React Js framework
